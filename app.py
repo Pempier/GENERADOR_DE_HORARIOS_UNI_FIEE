@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, send_file
 import pandas as pd
 
 app = Flask(__name__)
 
+@app.route("/")
 def index():
-    return render_template("index.html")
+    return send_file("index.html")
 
 @app.route("/api/cursos")
 def get_cursos():
