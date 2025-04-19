@@ -3,7 +3,7 @@ body {
   padding: 20px;
 }
 
-.contenedor-scroll {
+#contenedor-scroll {
   max-height: 300px;
   overflow-y: scroll;
   border: 1px solid #ccc;
@@ -11,6 +11,6 @@ body {
   border-radius: 8px;
 }
 
-.curso {
+#curso {
   margin: 5px 0;
 }
