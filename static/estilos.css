@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Open sans', sans-serif;
   padding: 20px;
 }
 
@@ -13,4 +15,75 @@ body {
 
 #curso {
   margin: 5px 0;
+}
+
+#card-wrapper {
+    text-align: center;
+    text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#contenedor-scroll {
+      max-height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+    }
+#curso {
+      margin: 5px 0;
+    }
+
+#card {
+    padding: 0px;
+    /* height: 400px; */
+    max-width: 400px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 10px;
+}
+
+#uni-branding {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#photo {
+    background: linear-gradient(rgb(228, 228, 228), rgb(170, 170, 170));
+    width: 100%;
+    /* height: 320px; */
+    border-radius: 10px 10px 0px 0px;
+}
+
+#wrapper {
+    padding-top: 40px;
+}
+
+p {
+    /* font-weight: bold; */
+    color: #666D74;
+    font-size: larger;
+}
+
+#uni-logo {
+    width: 100%;
+    margin: 0px;
+}
+
+#uni-logo-top {
+    width: 45%;
+    margin-top: 2px;
+    margin-left: 10px;
+}
+
+#uni-logo-footer {
+    width: 45%;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+input {
+    margin-top: 10px;
+    padding: 10px;
 }
