@@ -205,9 +205,15 @@ function llenarHorario(horario) {
             for (let i = inicioIndex; i < finIndex; i++) {
                 const contenedor = document.getElementById(dia);
                 if (contenedor && contenedor.children[i]) {
-                    contenedor.children[i].querySelector('.calendar_event_inner').innerHTML = `
-                        ${clase.CURSO} <br> ${clase.TIPO} <br>
-                    `;
+                    const calendarEventInner = contenedor.children[i].querySelector('.calendar_event_inner');
+                    
+                    // Si ya hay contenido en la celda (cruce de horarios)
+                    if (calendarEventInner.innerHTML.trim() !== "") {
+                        calendarEventInner.innerHTML += ` / ${clase.CURSO} <br> ${clase.TIPO} <br>`;
+                    } else {
+                        // Si no hay contenido, asignamos el primer curso
+                        calendarEventInner.innerHTML = `${clase.CURSO} <br> ${clase.TIPO} <br>`;
+                    }
                 }
             }
         }
