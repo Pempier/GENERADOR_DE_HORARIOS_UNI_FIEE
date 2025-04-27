@@ -10,11 +10,18 @@ def index():
 
 @app.route("/api/cursos")
 def api_cursos():
-    df = pd.read_excel("HORARIOS.xlsx", skiprows=2)
-    df.columns = ['ESP', 'COD', 'SECC', 'CURSO', 'DOCENTE', 'TIPO', 'CICLO', 'DIA', 'H_INI', 'H_FIN', 'SALON']
-    df = df[df['CURSO'].notna()]
-    cursos = df.drop_duplicates(subset=['CURSO'])['CURSO'].tolist()
-    return jsonify(cursos)
+    try:
+        df = pd.read_excel("HORARIOS.xlsx", skiprows=2)
+        df.columns = ['ESP', 'COD', 'SECC', 'CURSO', 'DOCENTE', 'TIPO', 'CICLO', 'DIA', 'H_INI', 'H_FIN', 'SALON']
+        df = df[df['CURSO'].notna()]
+
+        # Nos quedamos con un curso por nombre (sin repetir), y guardamos también el COD y CICLO
+        cursos = df.drop_duplicates(subset=['CURSO'])[['COD', 'CURSO', 'CICLO']]
+        
+        cursos_list = cursos.to_dict(orient='records')  # Lista de diccionarios
+        return jsonify(cursos_list)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/procesar", methods=["POST"])
 def procesar():
