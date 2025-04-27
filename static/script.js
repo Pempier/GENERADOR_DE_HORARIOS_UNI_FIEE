@@ -105,6 +105,74 @@ async function procesarSeleccion() {
   }
 }
 
+// Días de la semana en abreviado
+const diasSemana = ["LU", "MA", "MI", "JU", "VI", "SA"];
+
+// Horas base (puedes ajustar según tus bloques horarios)
+const horas = [
+    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+    "13:00", "14:00", "15:00", "16:00", "17:00", "18:00",
+    "19:00", "20:00", "21:00", "22:00"
+];
+
+// Función para limpiar y crear 14 casillas por cada día
+function inicializarCalendario() {
+    diasSemana.forEach(dia => {
+        const contenedor = document.getElementById(dia);
+        contenedor.innerHTML = ''; // limpia el div
+
+        for (let i = 0; i < 14; i++) {
+            const casilla = document.createElement('div');
+            casilla.className = 'calendar_event';
+            casilla.style.cssText = `
+                left: 0%; position:relative; top: -490px; width: 100%; 
+                height: 35px; overflow: hidden; cursor: n-resize;
+            `;
+
+            const contenido = document.createElement('div');
+            contenido.className = 'calendar_event_inner';
+            contenido.style.cssText = `
+                font-size: 10px; text-align: center;
+            `;
+            contenido.innerHTML = '<br><br>'; // vacío por defecto
+
+            const barra = document.createElement('div');
+            barra.className = 'calendar_event_bar';
+            barra.style.backgroundColor = 'transparent';
+
+            casilla.appendChild(contenido);
+            casilla.appendChild(barra);
+            contenedor.appendChild(casilla);
+        }
+    });
+}
+
+// Función para llenar el horario actual
+function llenarHorario(horario) {
+    inicializarCalendario(); // primero limpiar todo
+
+    horario.forEach(clase => {
+        const dia = clase.DIA;  // LU, MA, MI, etc.
+        const h_ini = clase.H_INI; // ejemplo: "15:00"
+        const h_fin = clase.H_FIN; // ejemplo: "18:00"
+
+        // Buscamos los índices de inicio y fin en el array de horas
+        const inicioIndex = horas.indexOf(h_ini);
+        const finIndex = horas.indexOf(h_fin);
+
+        if (inicioIndex !== -1 && finIndex !== -1) {
+            for (let i = inicioIndex; i < finIndex; i++) {
+                const contenedor = document.getElementById(dia);
+                if (contenedor && contenedor.children[i]) {
+                    contenedor.children[i].querySelector('.calendar_event_inner').innerHTML = `
+                        ${clase.CURSO} <br> ${clase.TIPO} <br>
+                    `;
+                }
+            }
+        }
+    });
+}
+
 let horariosGlobal = [];
 let horarioActual = 0;
 
@@ -166,6 +234,9 @@ function mostrarHorarioBonito(horario) {
     tabla.appendChild(thead);
     tabla.appendChild(tbody);
     contenedor.appendChild(tabla);
+
+    // AQUI ACTUALIZAMOS EL CALENDARIO GRAFICO
+    llenarHorario(horario);
 }
 
 // Funciones para botones
