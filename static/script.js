@@ -114,8 +114,8 @@ async function procesarCursos() {
 
 document.getElementById('procesar').addEventListener('click', async function() {
     // Obtener todos los checkboxes seleccionados
-    const seleccionados = Array.from(document.querySelectorAll('#lista-cursos input[type="checkbox"]:checked'))
-                               .map(checkbox => checkbox.value);
+  const seleccionados = Array.from(document.querySelectorAll('.seleccion.selected'))
+    .map(fila => JSON.parse(fila.querySelector('input[type="checkbox"]').dataset.curso));
 
     if (seleccionados.length === 0) {
         alert("Por favor selecciona al menos un curso.");
