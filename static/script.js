@@ -94,7 +94,7 @@ async function procesarSeleccion() {
 
     if (response.ok) {
       console.log("✅ Horarios válidos encontrados:", data);
-      mostrarHorarios(data.horarios);
+      guardarHorarios(data.horarios);
     } else {
       console.error("❌ Error:", data.error);
       alert("Error: " + data.error);
