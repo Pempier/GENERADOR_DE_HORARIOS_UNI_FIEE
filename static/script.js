@@ -92,7 +92,7 @@ async function procesarCursos() {
   }
 
   try {
-    const response = await fetch("/procesar", {
+    const response = await fetch("/procesar_2", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cursos: cursos_objetivo })
@@ -123,7 +123,7 @@ document.getElementById('procesar').addEventListener('click', async function() {
     }
 
     try {
-        const response = await fetch('/procesar_horarios', {
+        const response = await fetch('/procesar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
