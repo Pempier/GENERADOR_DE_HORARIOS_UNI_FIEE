@@ -1,6 +1,9 @@
 import os
+import io
+import base64
 from flask import Flask, request, jsonify, send_file
 import pandas as pd
+from itertools import product
 
 app = Flask(__name__)
 
@@ -43,7 +46,7 @@ def cruces_validos(horarios):
 
 # --------------------
 @app.route('/procesar', methods=['POST'])
-def procesar_horarios():
+def procesar():
     data = request.get_json()
     cursos_objetivo = data.get('cursos', [])
 
@@ -82,14 +85,8 @@ def index():
 @app.route("/api/cursos")
 def api_cursos():
     try:
-        df = pd.read_excel("HORARIOS.xlsx", skiprows=2)
-        df.columns = ['ESP', 'COD', 'SECC', 'CURSO', 'DOCENTE', 'TIPO', 'CICLO', 'DIA', 'H_INI', 'H_FIN', 'SALON']
-        df = df[df['CURSO'].notna()]
-
-        # Nos quedamos con un curso por nombre (sin repetir), y guardamos también el COD y CICLO
         cursos = df.drop_duplicates(subset=['CURSO'])[['COD', 'CURSO', 'CICLO']]
-        
-        cursos_list = cursos.to_dict(orient='records')  # Lista de diccionarios
+        cursos_list = cursos.to_dict(orient='records')
         return jsonify(cursos_list)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
