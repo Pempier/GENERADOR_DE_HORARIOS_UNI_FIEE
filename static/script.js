@@ -115,6 +115,51 @@ function mostrarHorarios(horarios) {
     document.getElementById('navegacionHorarios').style.display = horarios.length > 1 ? 'block' : 'none';
 }
 
+function actualizarHorario() {
+    const contenedor = document.getElementById('resultado');
+    contenedor.innerHTML = '';
+
+    if (horariosGlobal.length === 0) {
+        contenedor.innerHTML = '<p>No se encontraron combinaciones válidas.</p>';
+        return;
+    }
+
+    const horario = horariosGlobal[indiceHorario];
+
+    const divHorario = document.createElement('div');
+    divHorario.innerHTML = `<h3>Horario ${indiceHorario + 1} de ${horariosGlobal.length}</h3>`;
+
+    const tabla = document.createElement('table');
+    tabla.border = '1';
+    tabla.style.marginBottom = '20px';
+
+    const encabezado = `<tr>
+        <th>Curso</th>
+        <th>Sección</th>
+        <th>Tipo</th>
+        <th>Día</th>
+        <th>Hora Inicio</th>
+        <th>Hora Fin</th>
+        <th>Salón</th>
+    </tr>`;
+    tabla.innerHTML = encabezado;
+
+    horario.forEach(fila => {
+        tabla.innerHTML += `<tr>
+            <td>${fila.CURSO}</td>
+            <td>${fila.SECC}</td>
+            <td>${fila.TIPO}</td>
+            <td>${fila.DIA}</td>
+            <td>${fila.H_INI}</td>
+            <td>${fila.H_FIN}</td>
+            <td>${fila.SALON}</td>
+        </tr>`;
+    });
+
+    divHorario.appendChild(tabla);
+    contenedor.appendChild(divHorario);
+}
+
 function mostrarHorarioBonito(horario) {
     const contenedor = document.getElementById('resultado');
     contenedor.innerHTML = '';
