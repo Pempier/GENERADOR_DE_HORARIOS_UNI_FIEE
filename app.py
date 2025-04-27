@@ -110,7 +110,7 @@ def procesar():
     for combinacion in combinaciones:
         horarios = pd.concat(combinacion)
         if cruces_validos(horarios):
-            horarios_dict = horarios[["CURSO", "DOCENTE", "SECC", "TIPO", "DIA", "H_INI", "H_FIN", "SALON"]].to_dict(orient="records")
+            horarios_dict = horarios[["COD", "CURSO", "DOCENTE", "SECC", "TIPO", "DIA", "H_INI", "H_FIN", "SALON"]].to_dict(orient="records")
             combinaciones_validas.append(horarios_dict)
 
     if not combinaciones_validas:
