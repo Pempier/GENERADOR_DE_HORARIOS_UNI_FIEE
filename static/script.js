@@ -134,6 +134,7 @@ function mostrarHorarioBonito(horario) {
     thead.innerHTML = `
         <tr>
             <th>Curso</th>
+            <th>Docente</th>
             <th>Sección</th>
             <th>Tipo</th>
             <th>Día</th>
@@ -149,6 +150,7 @@ function mostrarHorarioBonito(horario) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${fila.CURSO}</td>
+            <td>${fila.DOCENTE}</td>
             <td>${fila.SECC}</td>
             <td>${fila.TIPO}</td>
             <td>${fila.DIA}</td>
