@@ -73,7 +73,7 @@ function filtrarTabla() {
   document.querySelectorAll("#tablaCursos tbody tr").forEach(fila => {
     const [ , , curso, ciclo ] = fila.children;
     const visible = curso.textContent.toLowerCase().includes(textoCurso) &&
-                    ciclo.textContent.toLowerCase().includes(textoCiclo);
+                    ciclo.textContent.includes(textoCiclo);
     fila.style.display = visible ? "" : "none";
   });
 }
