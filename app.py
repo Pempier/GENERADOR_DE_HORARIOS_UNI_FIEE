@@ -55,10 +55,11 @@ def procesar():
 
     # Obtener secciones por curso
     cursos_data = {}
-    for curso in cursos_objetivo:
-        secciones = []
-        try:
-            for secc in df[df["CURSO"] == curso]["SECC"].unique():
+    for curso_dict in cursos_objetivo:
+    curso_nombre = curso_dict["CURSO"]
+    secciones = []
+    try:
+        for secc in df[df["CURSO"] == curso_nombre]["SECC"].unique():
                 grupo = df_grouped.get_group((curso, secc))
                 secciones.append(grupo)
             cursos_data[curso] = secciones
