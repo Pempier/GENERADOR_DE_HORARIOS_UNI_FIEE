@@ -133,6 +133,7 @@ function mostrarHorarioBonito(horario) {
     thead.className = "table-dark";
     thead.innerHTML = `
         <tr>
+            <th>Código</th>
             <th>Curso</th>
             <th>Sección</th>
             <th>Tipo</th>
@@ -148,6 +149,7 @@ function mostrarHorarioBonito(horario) {
     horario.forEach(fila => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+            <td>${fila.COD}</td>
             <td>${fila.CURSO}</td>
             <td>${fila.SECC}</td>
             <td>${fila.TIPO}</td>
