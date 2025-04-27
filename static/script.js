@@ -149,9 +149,18 @@ function inicializarCalendario() {
 
 // Función para convertir hora "HH:MM" a índice de casilla
 function horaAHoraIndex(hora) {
-    const [h, m] = hora.split(':').map(Number);
-    // cada hora empieza a las 7:00
-    return h - 7;
+    if (!hora) return -1;
+    
+    if (typeof hora === 'number') {
+        return hora - 7;  // ya es número de la hora
+    }
+    
+    if (typeof hora === 'string') {
+        const [h, m] = hora.split(':').map(Number);
+        return h - 7;
+    }
+    
+    return -1; // otro tipo raro
 }
 
 // Función para llenar el horario en el calendario
