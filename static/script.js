@@ -5,36 +5,7 @@ const salida = document.getElementById("seleccionados");
 document.addEventListener("DOMContentLoaded", () => {
   fetch("/api/cursos")
     .then(res => res.json())
-    .then(cursos => {
-    cursos.forEach((curso, index) => {
-      const div = document.createElement("div");
-      div.className = "curso";
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.id = `curso_${index}`;
-      checkbox.value = curso;
-
-      checkbox.addEventListener("change", (e) => {
-        if (e.target.checked) {
-          cursos_objetivo.push(e.target.value);
-        } else {
-          const i = cursos_objetivo.indexOf(e.target.value);
-          if (i !== -1) cursos_objetivo.splice(i, 1);
-        }
-        salida.textContent = JSON.stringify(cursos_objetivo, null, 2);
-      });
-
-      const label = document.createElement("label");
-      label.htmlFor = `curso_${index}`;
-      label.textContent = curso;
-
-      div.appendChild(checkbox);
-      div.appendChild(label);
-      contenedor.appendChild(div);
-    });
-  });
-  .then(data => mostrarTabla(data));
+    .then(data => mostrarTabla(data));
 
   document.getElementById("buscarCurso").addEventListener("input", filtrarTabla);
   document.getElementById("buscarCiclo").addEventListener("input", filtrarTabla);
