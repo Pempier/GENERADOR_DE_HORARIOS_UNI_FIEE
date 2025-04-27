@@ -70,15 +70,38 @@ function filtrarTabla() {
   const textoCurso = document.getElementById("buscarCurso").value.toLowerCase();
   const textoCiclo = document.getElementById("buscarCiclo").value;
 
+  // Filtrar en ambas barras de búsqueda
   document.querySelectorAll("#tablaCursos tbody tr").forEach(fila => {
     const [ , , curso, ciclo ] = fila.children;
 
     const coincideCurso = curso.textContent.toLowerCase().includes(textoCurso);
-    const coincideCiclo = textoCiclo === "" || ciclo.textContent.trim() === textoCiclo;
+    const coincideCiclo = (textoCiclo === "" || ciclo.textContent.trim() === textoCiclo);
 
     fila.style.display = (coincideCurso && coincideCiclo) ? "" : "none";
   });
 }
+
+// Sincronizar los valores de los inputs
+document.getElementById("buscarCurso").addEventListener("input", function() {
+    document.getElementById("buscarCursoFinal").value = this.value;
+    filtrarTabla();
+});
+
+document.getElementById("buscarCiclo").addEventListener("change", function() {
+    document.getElementById("buscarCicloFinal").value = this.value;
+    filtrarTabla();
+});
+
+// Sincronizar los cambios del input final hacia el input inicial
+document.getElementById("buscarCursoFinal").addEventListener("input", function() {
+    document.getElementById("buscarCurso").value = this.value;
+    filtrarTabla();
+});
+
+document.getElementById("buscarCicloFinal").addEventListener("change", function() {
+    document.getElementById("buscarCiclo").value = this.value;
+    filtrarTabla();
+});
 
 async function procesarSeleccion() {
   if (cursos_objetivo.length === 0) {
