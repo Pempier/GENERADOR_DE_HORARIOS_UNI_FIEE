@@ -68,7 +68,7 @@ function mostrarCursosSeleccionados() {
 
 function filtrarTabla() {
   const textoCurso = document.getElementById("buscarCurso").value.toLowerCase();
-  const textoCiclo = document.getElementById("buscarCiclo").value.toLowerCase();
+  const textoCiclo = document.getElementById("buscarCiclo").value;
 
   document.querySelectorAll("#tablaCursos tbody tr").forEach(fila => {
     const [ , , curso, ciclo ] = fila.children;
