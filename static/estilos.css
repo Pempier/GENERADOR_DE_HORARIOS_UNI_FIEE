@@ -3,6 +3,69 @@
 body {
   font-family: 'Open sans', sans-serif;
   padding: 20px;
+  background: #f7f7f7;
+}
+
+.busqueda {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.busqueda input {
+    padding: 8px;
+    margin: 5px;
+    width: 200px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+thead {
+    background-color: #007bff;
+    color: white;
+}
+
+th,td{
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.selected {
+    background-color: #28a745;
+    color: white;       
+}
+
+#tablaCursos th {
+    text-align: center;
+}
+
+#tablaSeleccionados th {
+    text-align: center;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 #contenedor-scroll {
@@ -30,7 +93,7 @@ body {
       border: 1px solid #ccc;
       padding: 10px;
       border-radius: 8px;
-    }
+}
 
 #card {
     padding: 0px;
