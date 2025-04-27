@@ -92,30 +92,6 @@ def api_cursos():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/procesar_2", methods=["POST"])
-def procesar_2():
-    data = request.get_json()
-    cursos = data.get("cursos", [])
-
-    if not cursos:
-        return jsonify({"status": "error", "message": "No se recibieron cursos."}), 400
-
-    # Aquí debes generar la imagen del horario
-    # Como ejemplo, simplemente devolvemos una imagen en blanco
-    import matplotlib.pyplot as plt
-
-    fig, ax = plt.subplots()
-    ax.text(0.5, 0.5, "\n".join(cursos), fontsize=12, ha="center")
-    ax.axis('off')
-
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-    buf.close()
-
-    return jsonify({"status": "success", "image": img_base64})
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=True)
