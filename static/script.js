@@ -119,13 +119,13 @@ const horas = [
 function inicializarCalendario() {
     diasSemana.forEach(dia => {
         const contenedor = document.getElementById(dia);
-        contenedor.innerHTML = ''; // limpia el div
+        contenedor.innerHTML = '';
 
         for (let i = 0; i < 14; i++) {
             const casilla = document.createElement('div');
             casilla.className = 'calendar_event';
             casilla.style.cssText = `
-                left: 0%; position:relative; top: -490px; width: 100%; 
+                left: 0%; position:relative; top: -490px; width: 100%;
                 height: 35px; overflow: hidden; cursor: n-resize;
             `;
 
@@ -134,7 +134,7 @@ function inicializarCalendario() {
             contenido.style.cssText = `
                 font-size: 10px; text-align: center;
             `;
-            contenido.innerHTML = '<br><br>'; // vacío por defecto
+            contenido.innerHTML = '<br><br>'; // vacías inicialmente
 
             const barra = document.createElement('div');
             barra.className = 'calendar_event_bar';
@@ -147,20 +147,27 @@ function inicializarCalendario() {
     });
 }
 
-// Función para llenar el horario actual
+// Función para convertir hora "HH:MM" a índice de casilla
+function horaAHoraIndex(hora) {
+    const [h, m] = hora.split(':').map(Number);
+    // cada hora empieza a las 7:00
+    return h - 7;
+}
+
+// Función para llenar el horario en el calendario
 function llenarHorario(horario) {
-    inicializarCalendario(); // primero limpiar todo
+    inicializarCalendario(); // limpia todo
 
     horario.forEach(clase => {
         const dia = clase.DIA;  // LU, MA, MI, etc.
         const h_ini = clase.H_INI; // ejemplo: "15:00"
         const h_fin = clase.H_FIN; // ejemplo: "18:00"
 
-        // Buscamos los índices de inicio y fin en el array de horas
-        const inicioIndex = horas.indexOf(h_ini);
-        const finIndex = horas.indexOf(h_fin);
+        // Calculamos en qué casillas colocar
+        const inicioIndex = horaAHoraIndex(h_ini);
+        const finIndex = horaAHoraIndex(h_fin);
 
-        if (inicioIndex !== -1 && finIndex !== -1) {
+        if (inicioIndex >= 0 && finIndex > inicioIndex) {
             for (let i = inicioIndex; i < finIndex; i++) {
                 const contenedor = document.getElementById(dia);
                 if (contenedor && contenedor.children[i]) {
