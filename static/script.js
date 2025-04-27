@@ -72,9 +72,11 @@ function filtrarTabla() {
 
   document.querySelectorAll("#tablaCursos tbody tr").forEach(fila => {
     const [ , , curso, ciclo ] = fila.children;
-    const visible = curso.textContent.toLowerCase().includes(textoCurso) &&
-                    ciclo.textContent.includes(textoCiclo);
-    fila.style.display = visible ? "" : "none";
+
+    const coincideCurso = curso.textContent.toLowerCase().includes(textoCurso);
+    const coincideCiclo = textoCiclo === "" || ciclo.textContent.trim() === textoCiclo;
+
+    fila.style.display = (coincideCurso && coincideCiclo) ? "" : "none";
   });
 }
 
