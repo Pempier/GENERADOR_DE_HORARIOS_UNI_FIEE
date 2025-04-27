@@ -1,4 +1,4 @@
-const cursos_objetivo = [];
+ const cursos_objetivo = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   inicializarEventos();
@@ -159,7 +159,7 @@ function inicializarCalendario() {
             contenido.style.cssText = `
                 font-size: 10px; text-align: center;
             `;
-            contenido.innerHTML = '<br><br>'; // vacías inicialmente
+            contenido.innerHTML = ''; // vacías inicialmente
 
             const barra = document.createElement('div');
             barra.className = 'calendar_event_bar';
