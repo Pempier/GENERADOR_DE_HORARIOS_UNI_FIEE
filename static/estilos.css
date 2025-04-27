@@ -19,6 +19,14 @@ body {
     border: 1px solid #ccc;
 }
 
+.busqueda-input {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
