@@ -207,9 +207,22 @@ function llenarHorario(horario) {
                 if (contenedor && contenedor.children[i]) {
                     const calendarEventInner = contenedor.children[i].querySelector('.calendar_event_inner');
                     
+                    // Establecer el tamaño y el ajuste del contenido dentro de la celda
+                    const estilo = `
+                        position: relative;
+                        height: 35px; /* Altura de la celda */
+                        width: 174.64px; /* Ancho de la celda */
+                        overflow: hidden;
+                        text-align: center;
+                        font-size: 10px;
+                        white-space: normal; /* Permite que el texto se ajuste a múltiples líneas */
+                    `;
+                    
+                    calendarEventInner.style = estilo;
+
                     // Si ya hay contenido en la celda (cruce de horarios)
                     if (calendarEventInner.innerHTML.trim() !== "") {
-                        calendarEventInner.innerHTML += ` / ${clase.CURSO} <br> ${clase.TIPO} <br>`;
+                        calendarEventInner.innerHTML += `<br/> / ${clase.CURSO} <br> ${clase.TIPO} <br>`;
                     } else {
                         // Si no hay contenido, asignamos el primer curso
                         calendarEventInner.innerHTML = `${clase.CURSO} <br> ${clase.TIPO} <br>`;
