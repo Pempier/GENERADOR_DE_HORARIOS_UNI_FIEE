@@ -117,6 +117,11 @@ function guardarHorarios(horarios) {
 
 // Función para mostrar un horario
 function mostrarHorarioBonito(horario) {
+      // Mostrar contador
+    const contador = document.createElement('p');
+    contador.innerHTML = `<strong>Horario ${horarioActual + 1} de ${horariosGlobal.length}</strong>`;
+    contenedor.appendChild(contador);
+  
     const contenedor = document.getElementById('resultado');
     contenedor.innerHTML = '';
 
@@ -157,11 +162,6 @@ function mostrarHorarioBonito(horario) {
     tabla.appendChild(thead);
     tabla.appendChild(tbody);
     contenedor.appendChild(tabla);
-
-    // Mostrar contador
-    const contador = document.createElement('p');
-    contador.innerHTML = `<strong>Horario ${horarioActual + 1} de ${horariosGlobal.length}</strong>`;
-    contenedor.appendChild(contador);
 }
 
 // Funciones para botones
