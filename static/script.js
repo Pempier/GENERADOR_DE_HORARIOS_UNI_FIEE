@@ -112,6 +112,88 @@ async function procesarCursos() {
   }
 }
 
+document.getElementById('procesar').addEventListener('click', async function() {
+    // Obtener todos los checkboxes seleccionados
+    const seleccionados = Array.from(document.querySelectorAll('#lista-cursos input[type="checkbox"]:checked'))
+                               .map(checkbox => checkbox.value);
+
+    if (seleccionados.length === 0) {
+        alert("Por favor selecciona al menos un curso.");
+        return;
+    }
+
+    try {
+        const response = await fetch('/procesar_horarios', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cursos: seleccionados })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log("✅ Horarios válidos encontrados:", data);
+            mostrarHorarios(data.horarios);
+        } else {
+            console.error("❌ Error:", data.error);
+            alert("Error: " + data.error);
+        }
+    } catch (error) {
+        console.error("⚠️ Error en la solicitud:", error);
+        alert("Error de conexión con el servidor.");
+    }
+});
+
+// Función para mostrar horarios en el HTML
+function mostrarHorarios(horarios) {
+    const contenedor = document.getElementById('resultado');
+    contenedor.innerHTML = '';
+
+    if (horarios.length === 0) {
+        contenedor.innerHTML = '<p>No se encontraron combinaciones válidas.</p>';
+        return;
+    }
+
+    horarios.forEach((horario, index) => {
+        const divHorario = document.createElement('div');
+        divHorario.innerHTML = `<h3>Horario ${index + 1}</h3>`;
+        
+        const tabla = document.createElement('table');
+        tabla.border = '1';
+        tabla.style.marginBottom = '20px';
+
+        // Encabezado
+        const encabezado = `<tr>
+            <th>Curso</th>
+            <th>Sección</th>
+            <th>Tipo</th>
+            <th>Día</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+            <th>Salón</th>
+        </tr>`;
+        tabla.innerHTML = encabezado;
+
+        // Filas
+        horario.forEach(fila => {
+            tabla.innerHTML += `<tr>
+                <td>${fila.CURSO}</td>
+                <td>${fila.SECC}</td>
+                <td>${fila.TIPO}</td>
+                <td>${fila.DIA}</td>
+                <td>${fila.H_INI}</td>
+                <td>${fila.H_FIN}</td>
+                <td>${fila.SALON}</td>
+            </tr>`;
+        });
+
+        divHorario.appendChild(tabla);
+        contenedor.appendChild(divHorario);
+    });
+}
+    
 function mostrarImagenHorario(base64Image) {
   const resultado = document.getElementById("resultado");
   resultado.innerHTML = "";  // Limpiar resultados anteriores
