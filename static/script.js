@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function inicializarEventos() {
   document.getElementById("buscarCurso").addEventListener("input", filtrarTabla);
   document.getElementById("buscarCiclo").addEventListener("input", filtrarTabla);
-  document.getElementById("procesar").addEventListener("click", procesarCursos);
 }
 
 function cargarCursos() {
@@ -83,33 +82,6 @@ function filtrarTabla() {
 
     fila.style.display = (coincideCurso && coincideCiclo) ? "" : "none";
   });
-}
-
-async function procesarCursos() {
-  if (cursos_objetivo.length === 0) {
-    alert("Por favor selecciona al menos un curso");
-    return;
-  }
-
-  try {
-    const response = await fetch("/procesar_2", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cursos: cursos_objetivo })
-    });
-
-    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-
-    const data = await response.json();
-    if (data.status === "success") {
-      mostrarImagenHorario(data.image);
-    } else {
-      alert(data.message || "Error al generar el horario.");
-    }
-  } catch (error) {
-    console.error("Error al procesar:", error);
-    alert(`Error al conectar con el servidor: ${error.message}`);
-  }
 }
 
 document.getElementById('procesar').addEventListener('click', async function() {
@@ -192,13 +164,4 @@ function mostrarHorarios(horarios) {
         divHorario.appendChild(tabla);
         contenedor.appendChild(divHorario);
     });
-}
-    
-function mostrarImagenHorario(base64Image) {
-  const resultado = document.getElementById("resultado");
-  resultado.innerHTML = "";  // Limpiar resultados anteriores
-
-  const img = document.createElement("img");
-  img.src = `data:image/png;base64,${base64Image}`;
-  resultado.appendChild(img);
 }
