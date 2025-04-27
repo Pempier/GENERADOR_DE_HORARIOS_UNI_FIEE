@@ -115,37 +115,33 @@ function mostrarHorarios(horarios) {
     document.getElementById('navegacionHorarios').style.display = horarios.length > 1 ? 'block' : 'none';
 }
 
-function actualizarHorario() {
+function mostrarHorarioBonito(horario) {
     const contenedor = document.getElementById('resultado');
     contenedor.innerHTML = '';
 
-    if (horariosGlobal.length === 0) {
-        contenedor.innerHTML = '<p>No se encontraron combinaciones válidas.</p>';
-        return;
-    }
-
-    const horario = horariosGlobal[indiceHorario];
-
-    const divHorario = document.createElement('div');
-    divHorario.innerHTML = `<h3>Horario ${indiceHorario + 1} de ${horariosGlobal.length}</h3>`;
-
     const tabla = document.createElement('table');
-    tabla.border = '1';
-    tabla.style.marginBottom = '20px';
+    tabla.className = "table table-striped";  // 💬 Bootstrap clases
+    tabla.id = "tablaHorarios";
 
-    const encabezado = `<tr>
-        <th>Curso</th>
-        <th>Sección</th>
-        <th>Tipo</th>
-        <th>Día</th>
-        <th>Hora Inicio</th>
-        <th>Hora Fin</th>
-        <th>Salón</th>
-    </tr>`;
-    tabla.innerHTML = encabezado;
+    const thead = document.createElement('thead');
+    thead.className = "table-dark";
+    thead.innerHTML = `
+        <tr>
+            <th>Curso</th>
+            <th>Sección</th>
+            <th>Tipo</th>
+            <th>Día</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+            <th>Salón</th>
+        </tr>
+    `;
+
+    const tbody = document.createElement('tbody');
 
     horario.forEach(fila => {
-        tabla.innerHTML += `<tr>
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
             <td>${fila.CURSO}</td>
             <td>${fila.SECC}</td>
             <td>${fila.TIPO}</td>
@@ -153,11 +149,13 @@ function actualizarHorario() {
             <td>${fila.H_INI}</td>
             <td>${fila.H_FIN}</td>
             <td>${fila.SALON}</td>
-        </tr>`;
+        `;
+        tbody.appendChild(tr);
     });
 
-    divHorario.appendChild(tabla);
-    contenedor.appendChild(divHorario);
+    tabla.appendChild(thead);
+    tabla.appendChild(tbody);
+    contenedor.appendChild(tabla);
 }
 
 // Funciones para los botones
