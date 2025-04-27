@@ -106,66 +106,22 @@ async function procesarSeleccion() {
 }
 
 let horariosGlobal = [];
-let indiceHorario = 0;
+let horarioActual = 0;
 
-function mostrarHorarios(horarios) {
+// Función para guardar los horarios recibidos
+function guardarHorarios(horarios) {
     horariosGlobal = horarios;
-    indiceHorario = 0;
-    actualizarHorario();
-    document.getElementById('navegacionHorarios').style.display = horarios.length > 1 ? 'block' : 'none';
+    horarioActual = 0;
+    mostrarHorarioBonito(horariosGlobal[horarioActual]);
 }
 
-function actualizarHorario() {
-    const contenedor = document.getElementById('resultado');
-    contenedor.innerHTML = '';
-
-    if (horariosGlobal.length === 0) {
-        contenedor.innerHTML = '<p>No se encontraron combinaciones válidas.</p>';
-        return;
-    }
-
-    const horario = horariosGlobal[indiceHorario];
-
-    const divHorario = document.createElement('div');
-    divHorario.innerHTML = `<h3>Horario ${indiceHorario + 1} de ${horariosGlobal.length}</h3>`;
-
-    const tabla = document.createElement('table');
-    tabla.border = '1';
-    tabla.style.marginBottom = '20px';
-
-    const encabezado = `<tr>
-        <th>Curso</th>
-        <th>Sección</th>
-        <th>Tipo</th>
-        <th>Día</th>
-        <th>Hora Inicio</th>
-        <th>Hora Fin</th>
-        <th>Salón</th>
-    </tr>`;
-    tabla.innerHTML = encabezado;
-
-    horario.forEach(fila => {
-        tabla.innerHTML += `<tr>
-            <td>${fila.CURSO}</td>
-            <td>${fila.SECC}</td>
-            <td>${fila.TIPO}</td>
-            <td>${fila.DIA}</td>
-            <td>${fila.H_INI}</td>
-            <td>${fila.H_FIN}</td>
-            <td>${fila.SALON}</td>
-        </tr>`;
-    });
-
-    divHorario.appendChild(tabla);
-    contenedor.appendChild(divHorario);
-}
-
+// Función para mostrar un horario
 function mostrarHorarioBonito(horario) {
     const contenedor = document.getElementById('resultado');
     contenedor.innerHTML = '';
 
     const tabla = document.createElement('table');
-    tabla.className = "table table-striped";  // 💬 Bootstrap clases
+    tabla.className = "table table-striped";
     tabla.id = "tablaHorarios";
 
     const thead = document.createElement('thead');
@@ -201,20 +157,25 @@ function mostrarHorarioBonito(horario) {
     tabla.appendChild(thead);
     tabla.appendChild(tbody);
     contenedor.appendChild(tabla);
+
+    // Mostrar contador
+    const contador = document.createElement('p');
+    contador.innerHTML = `<strong>Horario ${horarioActual + 1} de ${horariosGlobal.length}</strong>`;
+    contenedor.appendChild(contador);
 }
 
-// Funciones para los botones
-function siguienteHorario() {
-    if (indiceHorario < horariosGlobal.length - 1) {
-        indiceHorario++;
-        actualizarHorario();
+// Funciones para botones
+function mostrarAnterior() {
+    if (horarioActual > 0) {
+        horarioActual--;
+        mostrarHorarioBonito(horariosGlobal[horarioActual]);
     }
 }
 
-function anteriorHorario() {
-    if (indiceHorario > 0) {
-        indiceHorario--;
-        actualizarHorario();
+function mostrarSiguiente() {
+    if (horarioActual < horariosGlobal.length - 1) {
+        horarioActual++;
+        mostrarHorarioBonito(horariosGlobal[horarioActual]);
     }
 }
 
