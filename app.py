@@ -78,26 +78,43 @@ def api_cursos():
     except Exception as e:
         return jsonify({"error": f"Error al cargar cursos: {e}"}), 500
 
-@app.route("/procesar", methods=["POST"])
+@app.route('/procesar', methods=['POST'])
 def procesar():
     data = request.get_json()
-    cursos_objetivo = data.get("cursos", [])
+    cursos_objetivo = data.get('cursos', [])
 
     if not cursos_objetivo:
         return jsonify({"error": "No se enviaron cursos"}), 400
 
-    try:
-        cursos_data = obtener_cursos_data(cursos_objetivo)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+    # Obtener secciones por curso
+    cursos_data = {}
+    for curso_dict in cursos_objetivo:
+        curso_nombre = curso_dict["CURSO"]
+        secciones = []
+        try:
+            for secc in df[df["CURSO"] == curso_nombre]["SECC"].unique():
+                grupo = df_grouped.get_group((curso_nombre, secc))
+                secciones.append(grupo)
+            cursos_data[curso_nombre] = secciones
+        except KeyError:
+            return jsonify({"error": f"Curso '{curso_nombre}' no encontrado"}), 404
 
+    if not cursos_data:
+        return jsonify({"error": "No se encontraron secciones para los cursos seleccionados."}), 404
+
+    # Generar todas las combinaciones posibles
     combinaciones = list(product(*cursos_data.values()))
 
-    combinaciones_validas = [
-        pd.concat(combinacion)[["CURSO", "SECC", "TIPO", "DIA", "H_INI", "H_FIN", "SALON"]].to_dict(orient="records")
-        for combinacion in combinaciones
-        if cruces_validos(pd.concat(combinacion))
-    ]
+    # Filtrar combinaciones válidas
+    combinaciones_validas = []
+    for combinacion in combinaciones:
+        horarios = pd.concat(combinacion)
+        if cruces_validos(horarios):
+            horarios_dict = horarios[["CURSO", "SECC", "TIPO", "DIA", "H_INI", "H_FIN", "SALON"]].to_dict(orient="records")
+            combinaciones_validas.append(horarios_dict)
+
+    if not combinaciones_validas:
+        return jsonify({"error": "No se encontraron combinaciones válidas."}), 404
 
     return jsonify({
         "cantidad": len(combinaciones_validas),
