@@ -110,7 +110,7 @@ const diasSemana = ["LU", "MA", "MI", "JU", "VI", "SA"];
 
 // Horas base (puedes ajustar según tus bloques horarios)
 const horas = [
-    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+    "08:00", "09:00", "10:00", "11:00", "12:00",
     "13:00", "14:00", "15:00", "16:00", "17:00", "18:00",
     "19:00", "20:00", "21:00", "22:00"
 ];
@@ -152,12 +152,12 @@ function horaAHoraIndex(hora) {
     if (!hora) return -1;
     
     if (typeof hora === 'number') {
-        return hora - 7;  // ya es número de la hora
+        return hora - 8;  // ya es número de la hora
     }
     
     if (typeof hora === 'string') {
         const [h, m] = hora.split(':').map(Number);
-        return h - 7;
+        return h - 8;
     }
     
     return -1; // otro tipo raro
