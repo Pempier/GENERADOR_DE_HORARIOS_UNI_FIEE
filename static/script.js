@@ -300,3 +300,22 @@ function mostrarSiguiente() {
     }
 }
 
+const abrirModal = document.getElementById('abrirModal');
+const miModal = document.getElementById('miModal');
+const cerrarModal = document.getElementById('cerrarModal');
+const procesarBtn = document.getElementById('procesar-btn');
+
+abrirModal.onclick = () => miModal.style.display = 'flex';
+cerrarModal.onclick = () => miModal.style.display = 'none';
+
+procesarBtn.onclick = () => {
+            alert('¡Procesando datos!');
+            // Aquí puedes poner tu lógica de procesamiento
+}
+
+// Cerrar el modal si se hace clic fuera de la ventana
+window.onclick = function(event) {
+            if (event.target == miModal) {
+                miModal.style.display = 'none';
+            }
+}
