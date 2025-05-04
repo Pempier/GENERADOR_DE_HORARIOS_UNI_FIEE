@@ -159,3 +159,11 @@ input {
     margin-top: 10px;
     padding: 10px;
 }
+
+.box-panel-5 {
+  /* background-color: red; */
+  grid-column-start: 8;
+  grid-column-end: 21;
+  grid-row-start: 7;
+  grid-row-end: 26;
+}
