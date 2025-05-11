@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/assets/LOGO-UNI.png">
+    <link rel="stylesheet" href="static/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css">
+    <title>Generador De Horarios</title>
+</head>
+<body>
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+        <div class="container-fluid container">
+            <a class="navbar-brand" href="#">
+                <img id="uni-logo-top" src="static/assets/uni-header.svg" alt="Universidad Nacional De Ingenieria">
+            </a>
+        </div>
+    </nav>
+    <hr>
+    <!-- prueba -->
+    <div class="contenedor-tablas">
+        <!-- Tabla de Cursos Fijos -->
+        <div class="tabla-container">
+          <strong>Tabla de Cursos Fijos</strong>
+          <div class="filtros">
+            <input type="text" id="buscarCursoFijo" placeholder="Buscar curso..." class="busqueda1-input">
+            <select id="buscarCicloFijo" class="busqueda1-input">
+                <option value="">Todos los ciclos</option>
+                <option value="1">Ciclo 1</option>
+                <option value="2">Ciclo 2</option>
+                <option value="3">Ciclo 3</option>
+                <option value="4">Ciclo 4</option>
+                <option value="5">Ciclo 5</option>
+                <option value="6">Ciclo 6</option>
+                <option value="7">Ciclo 7</option>
+                <option value="8">Ciclo 8</option>
+                <option value="9">Ciclo 9</option>
+                <option value="10">Ciclo 10</option>
+                <option value="11">Ciclo 11</option>
+            </select>
+          </div>
+          <div class="tabla-scroll-encabezado">
+            <table class="table table-stripped" id="tablaCursosFijos" style="margin-bottom:0;">
+              <thead class="table-dark">
+                <tr>
+                  <th style="width: 0%; text-align:center;">Ciclo</th>
+                  <th style="width: 16%; text-align:center;">Código</th>
+                  <th style="width: 45%; text-align:center;">Curso</th>
+                  <th style="width: 10%; text-align:center;">Acciones</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div class="tabla-scroll">
+            <table class="table table-stripped">
+            <thead class="table-dark"></thead>
+            <tbody id="contenidoTablaFijo">
+            </tbody>
+            </table>
+            </div>
+          </div>
+      
+          <!-- Tabla de Cursos Variables-->
+          <div class="tabla-container">
+            <strong>Tabla de Cursos Variables</strong>
+            <div class="filtros">
+                <input type="text" id="buscarCurso" placeholder="Buscar curso..." class="busqueda-input">
+                <select id="buscarCiclo" class="busqueda-input">
+                    <option value="">Todos los ciclos</option>
+                    <option value="1">Ciclo 1</option>
+                    <option value="2">Ciclo 2</option>
+                    <option value="3">Ciclo 3</option>
+                    <option value="4">Ciclo 4</option>
+                    <option value="5">Ciclo 5</option>
+                    <option value="6">Ciclo 6</option>
+                    <option value="7">Ciclo 7</option>
+                    <option value="8">Ciclo 8</option>
+                    <option value="9">Ciclo 9</option>
+                    <option value="10">Ciclo 10</option>
+                    <option value="11">Ciclo 11</option>
+                </select>
+            </div>
+                <div class="tabla-scroll-encabezado">
+                    <table class="table table-stripped" style="margin-bottom:0;">
+                      <thead class="table-dark">
+                        <tr>
+                          <th style="width: 0%;text-align: center;">&nbsp;</th>
+                          <th style="width: 11%;text-align: center;">Código</th>
+                          <th style="width: 50%;text-align: center;">Curso</th>
+                          <th style="width: 10%;text-align: center;">Ciclo</th>
+                        </tr>
+                      </thead>
+                    </table>
+                </div>
+            <div class="tabla-scroll">
+                <table class="table table-stripped" id="tablaCursos">
+                <thead class="table-dark"></thead>
+                <tbody id="contenidoTabla">
+                    <!-- Los cursos serán insertados aquí por script.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      
+    <!-- Generador -->
+    <div class="w-100 p-3">
+        <strong class="mt-4">Cursos seleccionados:</strong>
+        <div class="table-responsive">
+            <table class="table table-striped" id="tablaSeleccionados">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Curso</th>
+                        <th>Ciclo</th>
+                    </tr>
+                </thead>
+                <tbody id="contenidoTabla">
+                <!-- Las filas se llenarán dinámicamente con los cursos seleccionados -->
+                </tbody>
+            </table>
+        </div>
+        <button id="procesar" class="btn btn-primary">Procesar Selección</button>
+        <p>
+        <div id="resultado">
+        <!-- Generador de Horarios (Algoritmo) -->
+        </div>
+        <div class="text-center my-3">
+            <button onclick="mostrarAnterior()" class="btn btn-primary">Anterior</button>
+            <button onclick="mostrarSiguiente()" class="btn btn-primary">Siguiente</button>
+        </div>
+        <div class="mt-4">
+            <section id="schedule-group">
+                <div id="dp" class="calendar_main" style="
+            width: 100%;
+            visibility: visible;
+            cursor: move;
+          ">
+                    <div style="overflow: auto">
+                        <table cellpadding="0" cellspacing="0" border="0" style="
+                width: 100%;
+                border-collapse: separate;
+                border: 0px none;
+              ">
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 0px; border: 0px none">
+                                        <div class="calendar_corner" style="
+                        width: 60px;
+                        height: 30px;
+                      ">
+                                            <div class="calendar_corner_inner"></div>
+                                        </div>
+                                    </td>
+                                    <td style="
+                      width: 100%;
+                      padding: 0px;
+                      border: 0px none;
+                    ">
+                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="table-layout: fixed">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Lunes
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Martes
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Miércoles
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Jueves
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Viernes
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="
+                              overflow: hidden;
+                              padding: 0px;
+                              border: 0px none;
+                              height: 30px;
+                            ">
+                                                        <div class="calendar_colheader" style="
+                                
+                                cursor: default;
+                                height: 30px;
+                              ">
+                                                            <div class="calendar_colheader_inner">
+                                                                Sábado
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="content_schelude_main" style="
+              zoom: 1;
+            ">
+                        <div style="zoom: 1">
+                            <table cellspacing="0" cellpadding="0" border="0" style="
+                  border: 0px none;
+                  width: 100%;
+                ">
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 0px; border: 0px none">
+                                            <table cellspacing="0" cellpadding="0" border="0" style="border: 0px none; width: 60px">
+                                                <tbody id="hours"><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="position: relative; height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">8-9 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">9-10 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">10-11 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">11-12 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">12-13 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">13-14 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">14-15 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">15-16 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">16-17 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">17-18 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">18-19 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">19-20 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">20-21 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr><tr style="height: 0px;">
+    <td style="cursor: default; padding: 0px; border: 0px none;">
+        <div class="calendar_rowheader" style="height: 35px; overflow: hidden;">
+            <div class="calendar_rowheader_inner">
+                <div style="font-size: 10px;text-align: center;">21-22 hrs
+                
+                </div>
+            </div>
+        </div>
+    </td>
+</tr></tbody>
+                                            </table>
+                                        </td>
+                                        <td width="100%" style="padding: 0px; border: 0px none">
+                                            <div id="body_father_cell">
+                                                <table cellpadding="0" cellspacing="0" border="0" style="
+                            width: 100%;
+                            border: 0px none;
+                            table-layout: fixed;
+                          ">
+                                                    <tbody id="body_cell"><tr class="cell_hour hour_8"><td id="LU_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_8" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_9"><td id="LU_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_9" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_10"><td id="LU_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_10" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_11"><td id="LU_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_11" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_12"><td id="LU_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_12" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_13"><td id="LU_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_13" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_14"><td id="LU_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_14" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_15"><td id="LU_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_15" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_16"><td id="LU_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_16" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_17"><td id="LU_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_17" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_18"><td id="LU_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_18" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_19"><td id="LU_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_19" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_20"><td id="LU_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_20" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr><tr class="cell_hour hour_21"><td id="LU_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MA_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="MI_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="JU_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="VI_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td><td id="SA_21" style="padding: 0px; border: 0px none; vertical-align: top; height: 35px; overflow: hidden;">
+        <div class="calendar_cell" style="height: 35px;  ">
+            <div unselectable="on" class="calendar_cell_inner"></div>
+        </div>
+    </td></tr></tbody>
+                                                </table>
+                                                <table cellpadding="0" cellspacing="0" border="0" style="
+                            top: 0px;
+                            width: 100%;
+                            border: 0px none;
+                            table-layout: fixed;
+                          ">
+                                                    <tbody>
+                                                        <tr class="paint_cell paint_first"><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="LU" style="margin-right: 5px;   height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="MA" style="margin-right: 5px;   height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="MI" style="margin-right: 5px; height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="JU" style="margin-right: 5px; height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="VI" style="margin-right: 5px; height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td><td style="padding: 0px; border: 0px none; height: 0px; overflow: visible; text-align: left;">
+        <div class="alldays" id="SA" style="margin-right: 5px; height: 1px; margin-top: -1px;"></div>
+        <div></div>
+    </td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- Footer -->
+    <hr>
+    <footer class="page-footer pt-4">
+        <div class="container-fluid text-center text-md-left">
+            <div class="row">
+                <div class="col-md-6 mt-md-0 mt-3">
+                    <img id="uni-logo-footer" src="static/assets/uni-footer.svg" alt="Universidad Nacional De Ingenieria">
+                </div>
+
+                <div class="col-md-6 mb-md-0 mb-3">
+                    <h5 class="text-uppercase">REDES</h5>
+                    <ul class="list-unstyled">
+                        <li class="nav-item">
+                            <a target="_blank" href="https://www.linkedin.com/school/universidad-nacional-de-ingenieria-de-peru-/posts/?feedView=all" style="color: rgb(62, 60, 60); text-decoration: none;">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            &nbsp;
+                            <a target="_blank" href="https://www.facebook.com/p/FIEE-UNI-Facultad-de-Ingeniería-Eléctrica-y-Electrónica-61553980957280/" style="color: rgb(62, 60, 60); text-decoration: none;">
+                                <i class="fab fa-facebook"></i> 
+                            </a>
+                            &nbsp;
+                            <a target="_blank" href="https://www.instagram.com/cefiee_uni/?hl=en" style="color: rgb(62, 60, 60); text-decoration: none;">
+                                <i class="fab fa-instagram"></i> 
+                            </a>
+                            &nbsp;
+                            <a target="_blank" href="https://x.com/UNIoficial" style="color: rgb(62, 60, 60); text-decoration: none;">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </li>
+
+                        <div class="w-100 p-3"></div>
+
+                        <li>
+                            <h5 class="text-uppercase">CORREO</h5>
+                            <a class="nav-link" target="_blank" style="color: gray;" href="mailto:ep_electrica_fiee@uni.edu.pe">ep_electrica_fiee@uni.edu.pe</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="static/script.js"></script>
+
+</body>
+</html>
