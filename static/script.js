@@ -703,7 +703,7 @@ pdfGenerate.addEventListener('click', event => {
     const scheduleGroup = document.querySelector("#schedule-group");
 
     html2pdf().from(scheduleGroup).set({
-        margin: [-1.2, 0, 0, 0],
+        margin: [0, 0, 0, 0],
         filename: 'horario_generado_uni.pdf',
         image: { 
           type: 'jpeg', 
