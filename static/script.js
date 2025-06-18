@@ -715,7 +715,7 @@ pdfGenerate.addEventListener('click', event => {
         jsPDF: { 
           unit: 'in', 
           format: 'letter', 
-          orientation: 'portrait' 
+          orientation: 'landscape' 
         }
     }).save();
 
