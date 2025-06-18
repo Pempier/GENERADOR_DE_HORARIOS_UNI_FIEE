@@ -694,3 +694,29 @@ function sincronizarCheckboxes(checkboxTablaCursos, codigoCurso) {
     }
   });
 }
+
+const pdfGenerate = document.querySelector("#pdf_generate");
+
+pdfGenerate.addEventListener('click', event => {
+    event.preventDefault();
+
+    const scheduleGroup = document.querySelector("#schedule-group");
+
+    html2pdf().from(scheduleGroup).set({
+        margin: [-1.2, 0, 0, 0],
+        filename: 'horario_generado_uni.pdf',
+        image: { 
+          type: 'jpeg', 
+          quality: 500
+        },
+        html2canvas: { 
+          scale: 1 
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'portrait' 
+        }
+    }).save();
+
+});
