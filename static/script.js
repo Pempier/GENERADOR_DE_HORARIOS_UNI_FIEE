@@ -97,7 +97,7 @@ function manejarSeleccion(e, fila) {
     fila.classList.remove("selected");
   }
 
-  // 🔥 SINCRONIZAR hacia contenidoTablaFijo al desmarcar
+  // SINCRONIZAR hacia contenidoTablaFijo al desmarcar
   if (!checked) {
     const filasTablaFijo = document.querySelectorAll("#contenidoTablaFijo tr.fila-curso");
     filasTablaFijo.forEach(filaFijo => {
@@ -527,11 +527,6 @@ function mostrarTablaFijo(cursos) {
       const checkbox = filaSeccion.querySelector("input[type=checkbox]");
 
       checkbox.addEventListener("change", (e) => {
-        // Desmarcar otros checkboxes
-        tbodySecciones.querySelectorAll("input[type=checkbox]").forEach(cb => {
-          if (cb !== e.target) cb.checked = false;
-        });
-      
         const filaCurso = filaSecciones.previousElementSibling;
         const codigoCurso = filaCurso.children[1].textContent.trim();
       
