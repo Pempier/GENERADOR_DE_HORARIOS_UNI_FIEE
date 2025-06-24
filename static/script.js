@@ -97,7 +97,7 @@ function manejarSeleccion(e, fila) {
     fila.classList.remove("selected");
   }
 
-  // SINCRONIZAR hacia contenidoTablaFijo al desmarcar
+  // 🔥 SINCRONIZAR hacia contenidoTablaFijo al desmarcar
   if (!checked) {
     const filasTablaFijo = document.querySelectorAll("#contenidoTablaFijo tr.fila-curso");
     filasTablaFijo.forEach(filaFijo => {
@@ -185,77 +185,73 @@ function filtrarTablaFijo() {
 }
 
 async function procesarSeleccion() {
-  // Filtramos cursos_objetivos con base en contenidoTablaFijo1
-  const cursosFiltrados = cursos_objetivo.map(cursoObj => {
-  // Buscar si este curso está en contenidoTablaFijo1
-  const cursoMatch = contenidoTablaFijo1.find(cursoSel => cursoSel.COD === cursoObj.COD);
+  let finalCursosToProcess = [];
 
-  if (cursoMatch) {
-    // Si hay coincidencia, filtrar las secciones
-    const seccionesFiltradas = cursoObj.secciones.filter(seccionObj =>
-      cursoMatch.secciones.some(seccionSel => seccionSel.SECC === seccionObj.SECC)
-    );
+  // 1. Start with courses selected in the variable table (cursos_objetivo)
+  // These courses initially include ALL their sections.
+  cursos_objetivo.forEach(cursoObj => {
+      finalCursosToProcess.push(JSON.parse(JSON.stringify(cursoObj))); // Deep copy
+  });
 
-    // Si quedan secciones, devolvemos el curso con solo esas secciones
-    if (seccionesFiltradas.length > 0) {
-      return {
-        ...cursoObj,
-        secciones: seccionesFiltradas
-      };
-    } else {
-      return null; // Eliminar curso si no tiene secciones válidas
-    }
+  // 2. Override/refine sections based on selections in the fixed table (contenidoTablaFijo1)
+  // If a course exists in contenidoTablaFijo1, it means specific sections were chosen there.
+  contenidoTablaFijo1.forEach(cursoFijo => {
+      const indexInFinal = finalCursosToProcess.findIndex(c => c.COD === cursoFijo.COD);
+
+      if (indexInFinal !== -1) {
+          // Course exists in both, override sections with the fixed table's selections
+          finalCursosToProcess[indexInFinal].secciones = JSON.parse(JSON.stringify(cursoFijo.secciones));
+      } else {
+          // Course was selected ONLY in the fixed table, add it to the final list
+          finalCursosToProcess.push(JSON.parse(JSON.stringify(cursoFijo)));
+      }
+  });
+
+  // 3. Filter out courses that ended up with no sections (e.g., if a course was only in cursos_objetivo
+  // and then removed from contenidoTablaFijo1 without adding any sections there)
+  finalCursosToProcess = finalCursosToProcess.filter(curso => curso.secciones && curso.secciones.length > 0);
+
+  if (finalCursosToProcess.length === 0) {
+      alert("Por favor selecciona al menos un curso y/o sus secciones.");
+      return;
   }
 
-  // Si no hay coincidencia, dejar el curso tal cual
-  return cursoObj;
-}).filter(Boolean); // Eliminar los nulls
-
-// Reasignar si quieres sobrescribir
-cursos_objetivo.splice(0, cursos_objetivo.length, ...cursosFiltrados);
-
-if (cursos_objetivo.length === 0) {
-  alert("Por favor selecciona al menos un curso.");
-  return;
-}
-
-console.log("cursos_objetivo actualizados:", cursos_objetivo);
+  console.log("Cursos y secciones FINAL para procesar:", finalCursosToProcess);
 
   try {
-    const response = await fetch('/procesar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cursos: cursos_objetivo })
-    });
-    const data = await response.json();
-
-    console.log("✅ Horarios válidos encontrados:", data);
-
-    if (response.ok) {
-      // Filtrar los horarios basados en las secciones de cursos_objetivo
-      const horariosFiltrados = data.horarios.filter(combinacion => {
-        return combinacion.every(horario => {
-          const cursoObj = cursos_objetivo.find(curso => curso.COD === horario.COD);
-          if (!cursoObj) return false;
-      
-          return cursoObj.secciones.some(seccion => seccion.SECC === horario.SECC);
-        });
+      const response = await fetch('/procesar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cursos: finalCursosToProcess })
       });
+      const data = await response.json();
 
-      if (horariosFiltrados.length > 0) {
-        console.log("✅ Horarios válidos encontrados:", horariosFiltrados);
-        guardarHorarios(horariosFiltrados);
+      console.log("✅ Horarios válidos encontrados:", data);
+
+      if (response.ok) {
+          const horariosFiltrados = data.horarios.filter(combinacion => {
+              return combinacion.every(horario => {
+                  const cursoObj = finalCursosToProcess.find(curso => curso.COD === horario.COD);
+                  if (!cursoObj) return false;
+
+                  return cursoObj.secciones.some(seccion => seccion.SECC === horario.SECC);
+              });
+          });
+
+          if (horariosFiltrados.length > 0) {
+              console.log("✅ Horarios válidos encontrados:", horariosFiltrados);
+              guardarHorarios(horariosFiltrados);
+          } else {
+              console.log("❌ No se encontraron horarios válidos.");
+              alert("No se encontraron horarios válidos para las secciones seleccionadas.");
+          }
       } else {
-        console.log("❌ No se encontraron horarios válidos.");
-        alert("No se encontraron horarios válidos para las secciones seleccionadas.");
+          console.error("❌ Error:", data.error);
+          alert("Error: " + data.error);
       }
-    } else {
-      console.error("❌ Error:", data.error);
-      alert("Error: " + data.error);
-    }
   } catch (error) {
-    console.error("⚠️ Error en la solicitud:", error);
-    alert("Error de conexión con el servidor.");
+      console.error("⚠️ Error en la solicitud:", error);
+      alert("Error de conexión con el servidor.");
   }
 }
 
@@ -478,11 +474,13 @@ nuevaFila.insertCell().textContent = nota;
 
 function mostrarTablaFijo(cursos) {
   const tbody = document.getElementById("contenidoTablaFijo");
+  tbody.innerHTML = ""; // Clear existing content to prevent duplicates
+
   cursos.forEach(curso => {
     // Crear la fila principal del curso
     const filaCurso = document.createElement("tr");
     filaCurso.classList.add("fila-curso");
-  
+
     filaCurso.innerHTML = `
       <td style="width: 0%; text-align:center;">${curso.CICLO}</td>
       <td style="width: 20%; text-align:center;">${curso.COD}</td>
@@ -490,17 +488,17 @@ function mostrarTablaFijo(cursos) {
       <td style="width: 10%; text-align:center;"><button class="btn-toggle">▼</button></td>
     `;
     tbody.appendChild(filaCurso);
-  
+
     // Crear la fila de secciones (subtabla)
     const filaSecciones = document.createElement("tr");
     filaSecciones.classList.add("fila-secciones", "hidden");
     const tdSecciones = document.createElement("td");
     tdSecciones.colSpan = 4;
-  
+
     // Crear tabla de secciones
     const tablaSecciones = document.createElement("table");
     tablaSecciones.classList.add("table", "table-bordered", "tabla-secciones");
-  
+
     tablaSecciones.innerHTML = `
       <thead style="position: static; background-color: #212529;">
         <tr>
@@ -510,14 +508,14 @@ function mostrarTablaFijo(cursos) {
         </tr>
       </thead>
     `;
-  
+
     const tbodySecciones = document.createElement("tbody");
-  
+
     // Iteramos sobre las secciones del curso
     curso.secciones.forEach(seccion => {
       // Fila de la sección
       const filaSeccion = document.createElement("tr");
-  
+
       filaSeccion.innerHTML = `
         <td><input type="checkbox"></td>
         <td>${seccion.SECC}</td>
@@ -529,94 +527,83 @@ function mostrarTablaFijo(cursos) {
       checkbox.addEventListener("change", (e) => {
         const filaCurso = filaSecciones.previousElementSibling;
         const codigoCurso = filaCurso.children[1].textContent.trim();
-      
-        // Quitar curso anterior si existe
-        const index = contenidoTablaFijo1.findIndex(item => item.COD === codigoCurso);
-        if (index !== -1) {
-          contenidoTablaFijo1.splice(index, 1);
+        const estaMarcado = e.target.checked;
+
+        // Find the course in contenidoTablaFijo1
+        let cursoEnTablaFija = contenidoTablaFijo1.find(item => item.COD === codigoCurso);
+
+        if (estaMarcado) {
+          // If the checkbox is checked, add the section
+          if (!cursoEnTablaFija) {
+            // If course doesn't exist, add it with the selected section
+            cursoEnTablaFija = {
+              CICLO: curso.CICLO,
+              COD: curso.COD,
+              CURSO: curso.CURSO,
+              secciones: []
+            };
+            contenidoTablaFijo1.push(cursoEnTablaFija);
+          }
+          // Add the new section if it's not already there
+          if (!cursoEnTablaFija.secciones.some(s => s.SECC === seccion.SECC)) {
+            cursoEnTablaFija.secciones.push({
+              SECC: seccion.SECC,
+              detalles: [...seccion.detalles]
+            });
+          }
+        } else {
+          // If the checkbox is unchecked, remove the section
+          if (cursoEnTablaFija) {
+            cursoEnTablaFija.secciones = cursoEnTablaFija.secciones.filter(s => s.SECC !== seccion.SECC);
+            // If no sections remain, remove the course from contenidoTablaFijo1
+            if (cursoEnTablaFija.secciones.length === 0) {
+              contenidoTablaFijo1 = contenidoTablaFijo1.filter(item => item.COD !== codigoCurso);
+            }
+          }
         }
-      
-        if (e.target.checked) {
-          // Obtener datos completos del curso actual
-          const cursoSeleccionado = {
-            CICLO: curso.CICLO,
-            COD: curso.COD,
-            CURSO: curso.CURSO,
-            secciones: [
-              {
-                SECC: seccion.SECC,
-                detalles: [...seccion.detalles]
+
+        // Update the visual state of the parent course row
+        const haySeleccionado = Array.from(tbodySecciones.querySelectorAll("input[type=checkbox]")).some(cb => cb.checked);
+        if (haySeleccionado) {
+          filaCurso.classList.add("selected");
+        } else {
+          filaCurso.classList.remove("selected");
+        }
+
+        // Synchronize the checkbox in the main tablaCursos
+        const filasTablaCursos = document.querySelectorAll("#tablaCursos tbody tr");
+        filasTablaCursos.forEach(fila => {
+          const codigoFila = fila.children[1].textContent.trim();
+          if (codigoFila === codigoCurso) {
+            const checkboxMostrarTabla = fila.querySelector("input[type=checkbox]");
+            if (haySeleccionado) {
+              if (!checkboxMostrarTabla.checked) {
+                checkboxMostrarTabla.checked = true;
+                manejarSeleccion({ target: checkboxMostrarTabla }, fila);
               }
-            ]
-          };
-          contenidoTablaFijo1.push(cursoSeleccionado);
-        }
-      
+            } else {
+              if (checkboxMostrarTabla.checked) {
+                checkboxMostrarTabla.checked = false;
+                manejarSeleccion({ target: checkboxMostrarTabla }, fila);
+              }
+            }
+          }
+        });
+
         console.log("contenidoTablaFijo1", contenidoTablaFijo1);
       });
 
-      tbodySecciones.addEventListener("change", (e) => {
-        const filaSecciones = e.currentTarget.closest("tr.fila-secciones");
-        const filaCurso = filaSecciones.previousElementSibling;
-        if (e.target.type === "checkbox") {
-          // Desmarcar los demás checkboxes de esta subtabla
-          tbodySecciones.querySelectorAll("input[type=checkbox]").forEach(cb => {
-            if (cb !== e.target && cb.checked) {
-              cb.checked = false;
-              cb.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-          });
-      
-          const haySeleccionado = Array.from(tbodySecciones.querySelectorAll("input[type=checkbox]"))
-                                      .some(checkbox => checkbox.checked);
-      
-          // Cambiar color de filaCurso
-          if (haySeleccionado) {
-            filaCurso.classList.add("selected");
-          } else {
-            filaCurso.classList.remove("selected");
-          }
-      
-          // 🔥 SINCRONIZAR COLOR CON LA TABLA DE CURSOS VARIABLES
-          const codigoCurso = filaCurso.children[1].textContent.trim();
-          const filasTablaCursos = document.querySelectorAll("#tablaCursos tbody tr");
-          filasTablaCursos.forEach(fila => {
-            const codigoFila = fila.children[1].textContent.trim();
-            if (codigoFila === codigoCurso) {
-              if (haySeleccionado) {
-                fila.classList.add("selected");
-              } else {
-                fila.classList.remove("selected");
-              }
-      
-              // ✅ AQUÍ: sincronizar checkbox de tabla principal
-              const checkboxMostrarTabla = fila.querySelector("input[type=checkbox]");
-              if (haySeleccionado) {
-                if (!checkboxMostrarTabla.checked) {
-                  checkboxMostrarTabla.checked = true;
-                  manejarSeleccion({ target: checkboxMostrarTabla }, fila);
-                }
-              } else {
-                if (checkboxMostrarTabla.checked) {
-                  checkboxMostrarTabla.checked = false;
-                  manejarSeleccion({ target: checkboxMostrarTabla }, fila);
-                }
-              }
-            }
-          });
-        }
-      });
 
       // Fila de detalles (sub-subtabla)
       const filaDetalles = document.createElement("tr");
       filaDetalles.classList.add("fila-detalles", "hidden");
-  
+
       const tdDetalles = document.createElement("td");
       tdDetalles.colSpan = 3;
-  
+
       const tablaDetalles = document.createElement("table");
       tablaDetalles.classList.add("table", "table-sm", "tabla-detalles");
-  
+
       tablaDetalles.innerHTML = `
         <thead style="position: static; background-color: #212529;">
           <tr>
@@ -628,9 +615,9 @@ function mostrarTablaFijo(cursos) {
           </tr>
         </thead>
       `;
-  
+
       const tbodyDetalles = document.createElement("tbody");
-  
+
       // Iteramos sobre los detalles de la sección
       seccion.detalles.forEach(detalle => {
         const filaDet = document.createElement("tr");
@@ -643,27 +630,27 @@ function mostrarTablaFijo(cursos) {
         `;
         tbodyDetalles.appendChild(filaDet);
       });
-  
+
       tablaDetalles.appendChild(tbodyDetalles);
       tdDetalles.appendChild(tablaDetalles);
       filaDetalles.appendChild(tdDetalles);
-  
+
       // Agregar fila detalles a subtabla
       tbodySecciones.appendChild(filaDetalles);
-  
+
       // Listener para botón "+"
       const btnDetalle = filaSeccion.querySelector(".btn-toggle");
       btnDetalle.addEventListener("click", () => {
         filaDetalles.classList.toggle("hidden");
       });
     });
-  
+
     tablaSecciones.appendChild(tbodySecciones);
     tdSecciones.appendChild(tablaSecciones);
     filaSecciones.appendChild(tdSecciones);
-  
+
     tbody.appendChild(filaSecciones);
-  
+
     // Listener para botón "▼"
     const btnSeccion = filaCurso.querySelector(".btn-toggle");
     btnSeccion.addEventListener("click", () => {
@@ -693,25 +680,25 @@ function sincronizarCheckboxes(checkboxTablaCursos, codigoCurso) {
 const pdfGenerate = document.querySelector("#pdf_generate");
 
 pdfGenerate.addEventListener('click', event => {
-    event.preventDefault();
+  event.preventDefault();
 
-    const scheduleGroup = document.querySelector("#schedule-group");
+  const scheduleGroup = document.querySelector("#schedule-group");
 
-    html2pdf().from(scheduleGroup).set({
-        margin: [0, 0, 0, 0],
-        filename: 'horario_generado_uni.pdf',
-        image: { 
-          type: 'jpeg', 
-          quality: 500
-        },
-        html2canvas: { 
-          scale: 1 
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'landscape' 
-        }
-    }).save();
+  html2pdf().from(scheduleGroup).set({
+      margin: [0, 0, 0, 0],
+      filename: 'horario_generado_uni.pdf',
+      image: { 
+        type: 'jpeg', 
+        quality: 500
+      },
+      html2canvas: { 
+        scale: 1 
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'landscape' 
+      }
+  }).save();
 
 });
